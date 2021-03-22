@@ -1,4 +1,13 @@
 # Elastoo task
+## Documentation
+[https://elastoo.kosyachniy.com:9443/docs](https://elastoo.kosyachniy.com:9443/docs)
+
+## Usage
+Use scripts for check API methods:
+* [Create task](requests/add_task.sh)
+* [Get processed results](requests/get_results.sh)
+* [Get current task queue](requests/get_tasks.sh)
+
 ## Run (With Docker)
 ### Local
 ```

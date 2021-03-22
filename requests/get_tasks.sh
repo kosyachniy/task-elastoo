@@ -1,1 +1,1 @@
-curl -w "\n%{time_total}\n" -X GET http://localhost:5000/tasks
+curl -w "\n%{time_total}\n" -X GET https://elastoo.kosyachniy.com:9443/tasks
