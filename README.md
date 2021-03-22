@@ -1,8 +1,8 @@
-# Тестовое задание для компании Elastoo
-## Запуск
-Установка окружения
+# Elastoo task
+## Run
+1. Set environment
 ```
 pip install -r requirements.txt
 ```
 
-Точка входа: ` run.sh `
+2. Entry point: ` run.sh `
