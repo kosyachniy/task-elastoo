@@ -1,0 +1,32 @@
+version: "3"
+services:
+  elastoo_api:
+    build:
+      dockerfile: ./docker/api/Dockerfile
+      context: ../
+    container_name: "elastoo_api"
+    restart: unless-stopped
+
+  elastoo_server:
+    image: "nginx:1.19.6"
+    container_name: "elastoo_server"
+    restart: unless-stopped
+    volumes:
+      - "./server/nginx.prod.conf:/etc/nginx/nginx.conf"
+      - "./certbot/conf:/etc/letsencrypt"
+      - "./certbot/www:/var/www/certbot"
+    depends_on:
+      - elastoo_api
+    ports:
+      - '8001:8001'
+      - '9443:9443'
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  elastoo_certbot:
+    image: certbot/certbot
+    container_name: "elastoo_certbot"
+    restart: unless-stopped
+    volumes:
+      - "./certbot/conf:/etc/letsencrypt"
+      - "./certbot/www:/var/www/certbot"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
