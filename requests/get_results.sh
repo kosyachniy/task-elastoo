@@ -1,0 +1,1 @@
+curl -w "\n%{time_total}\n" -X GET http://localhost:5000/results

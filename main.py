@@ -7,7 +7,8 @@ from pydantic import BaseModel
 
 
 app = FastAPI(title="Task for Elastoo")
-q = queue.Queue()
+queue_in = queue.Queue()
+queue_out = queue.Queue()
 
 
 class TaskInput(BaseModel):
@@ -17,14 +18,23 @@ class TaskInput(BaseModel):
 class TaskOutput(BaseModel):
 	position: int
 
+class ResultOutput(BaseModel):
+	result: list[int]
+
 
 def worker():
 	while True:
-		item = q.get()
+		if not queue_in.qsize():
+			continue
+
+		item = queue_in.queue[0]
 		print(f'Working on {item.num}')
 		time.sleep(item.timeout)
 		print(f'Finished {item.num}')
-		q.task_done()
+
+		queue_out.put(item.num)
+		queue_in.get()
+		queue_in.task_done()
 
 threading.Thread(target=worker, daemon=True).start()
 
@@ -35,6 +45,13 @@ threading.Thread(target=worker, daemon=True).start()
 	response_model=TaskOutput,
 )
 async def add(task: TaskInput):
-	position = q.qsize()
-	q.put(task)
-	return {"position": position}
+	queue_in.put(task)
+	return {"position": queue_in.qsize()}
+
+@app.get(
+	"/results",
+	response_description="Results",
+	response_model=ResultOutput,
+)
+async def result():
+	return {"result": queue_out.queue}
